@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-create-tasks-table.yaml
+      relativeToChangelogFile: true

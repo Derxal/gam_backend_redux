@@ -1,3 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+import mysql from "mysql2/promise";
+import { dbConfig } from "./config.js";
 
-export const database = new DatabaseSync("tasks.db");
+export const database = mysql.createPool(dbConfig);

@@ -4,15 +4,12 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "migrate": "node_modules/liquibase/dist/liquibase/liquibase update",
-        "prestart": "npm run migrate",
         "start": "node src/server.js",
-        "predev": "npm run migrate",
         "dev": "node --watch src/server.js"
     },
     "dependencies": {
         "cors": "^2.8.6",
         "express": "^5.3.0",
-        "liquibase": "^4.28.1"
+        "mysql2": "^3.24.6"
     }
 }

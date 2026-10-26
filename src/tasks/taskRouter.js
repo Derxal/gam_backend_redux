@@ -11,38 +11,44 @@ const taskIdFrom = (req) => Number(req.params.id);
 const notFound = (res) => res.status(404).json({ error: "Tarea no encontrada" });
 const badRequest = (res, message) => res.status(400).json({ error: message });
 
-taskRouter.get("/", (req, res) => {
-    res.json(taskRepository.findAll());
+// Un id que no es un entero no puede existir: se responde 404 sin consultar a MySQL
+taskRouter.param("id", (req, res, next, id) => {
+    if (!/^\d+$/.test(id)) return notFound(res);
+    next();
 });
 
-taskRouter.get("/:id", (req, res) => {
-    const task = taskRepository.findById(taskIdFrom(req));
+taskRouter.get("/", async (req, res) => {
+    res.json(await taskRepository.findAll());
+});
+
+taskRouter.get("/:id", async (req, res) => {
+    const task = await taskRepository.findById(taskIdFrom(req));
     if (!task) return notFound(res);
 
     res.json(task);
 });
 
-taskRouter.post("/", (req, res) => {
+taskRouter.post("/", async (req, res) => {
     const { title } = req.body ?? {};
     if (!isValidTitle(title)) return badRequest(res, "El título es obligatorio");
 
-    const task = taskRepository.create(title.trim());
+    const task = await taskRepository.create(title.trim());
     res.status(201).json(task);
 });
 
-taskRouter.put("/:id", (req, res) => {
+taskRouter.put("/:id", async (req, res) => {
     const { title, completed } = req.body ?? {};
     if (!isValidTitle(title)) return badRequest(res, "El título es obligatorio");
     if (!isValidCompleted(completed)) return badRequest(res, "completed debe ser true o false");
 
-    const task = taskRepository.update(taskIdFrom(req), { title: title.trim(), completed });
+    const task = await taskRepository.update(taskIdFrom(req), { title: title.trim(), completed });
     if (!task) return notFound(res);
 
     res.json(task);
 });
 
-taskRouter.delete("/:id", (req, res) => {
-    const task = taskRepository.remove(taskIdFrom(req));
+taskRouter.delete("/:id", async (req, res) => {
+    const task = await taskRepository.remove(taskIdFrom(req));
     if (!task) return notFound(res);
 
     res.json(task);
